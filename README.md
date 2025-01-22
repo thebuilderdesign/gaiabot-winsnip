@@ -9,7 +9,7 @@ sudo apt update && sudo apt install git curl jq -y
 git clone https://github.com/winsnip/gaiabot-winsnip.git
 cd gaiabot-winsnip
 ```
-ubah NodeId pada URL= di run.sh
+ubah NodeId pada URL="https://0xxxxx.gaia.domains/v1/chat/completions" di run.sh
 nano run.sh
 ```
 chmod +x run.sh

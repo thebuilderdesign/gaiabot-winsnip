@@ -5,6 +5,10 @@ This gaiabot aims to make it easier for you to interact with your respective bot
 ```
 sudo apt update && sudo apt install git curl jq -y
 ```
+```
+git clone https://github.com/winsnip/gaiabot-winsnip.git
+cd gaiabot-winsnip
+```
 ubah NodeId pada URL= di run.sh
 nano run.sh
 ```

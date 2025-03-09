@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Konfigurasi
-URL="https://NodeId.gaia.domains/v1/chat/completions"
+URL="https://NodeIdmu.gaia.domains/v1/chat/completions"
 HEADERS=(-H "accept: application/json" -H "Content-Type: application/json")
 KEYWORDS_FILE="keywords.txt"
 INTERVAL=30 # Interval dalam detik
@@ -12,6 +12,12 @@ CYAN="\033[1;36m"
 YELLOW="\033[1;33m"
 RED="\033[1;31m"
 RESET="\033[0m"
+
+# Cek apakah jq terinstal
+if ! command -v jq &>/dev/null; then
+  echo -e "${RED}Error: 'jq' tidak ditemukan! Silakan install dengan 'sudo apt install jq' atau 'sudo yum install jq'.${RESET}"
+  exit 1
+fi
 
 # Fungsi untuk membaca file kata kunci dan memilih secara acak
 get_random_keyword() {
@@ -36,20 +42,35 @@ send_request() {
   ]
 }
 EOF
-)
+  )
+
+  # Cek koneksi internet sebelum mengirim request
+  if ! ping -c 1 8.8.8.8 &>/dev/null; then
+    echo -e "${RED}Error: Tidak ada koneksi internet!${RESET}"
+    return
+  fi
 
   # Mengirim request menggunakan curl
   response=$(curl -s -X POST "$URL" "${HEADERS[@]}" -d "$data")
 
-  # Mengekstrak konten penting dari respons
-  local content=$(echo "$response" | jq -r '.choices[0].message.content')
+  # Cek apakah respons valid
+  if ! echo "$response" | jq -e . >/dev/null 2>&1; then
+    echo -e "${RED}Error: Respons tidak valid!${RESET}"
+    return
+  fi
+
+  # Mengekstrak konten dari respons
+  local content=$(echo "$response" | jq -r '.choices[0].message.content // "Tidak ada respons."')
 
   echo -e "${GREEN}Response diterima:${RESET}"
   echo -e "${CYAN}$content${RESET}"
   echo -e "${YELLOW}------------------------------------${RESET}"
 }
 
-# Loop untuk mengirim request setiap 30 detik
+# Menangani SIGINT (Ctrl+C) untuk keluar dengan rapi
+trap "echo -e '${RED}\nScript dihentikan oleh pengguna.${RESET}'; exit 0" SIGINT
+
+# Loop untuk mengirim request setiap INTERVAL detik
 while true; do
   send_request
   echo -e "${GREEN}Menunggu $INTERVAL detik sebelum request berikutnya...${RESET}"

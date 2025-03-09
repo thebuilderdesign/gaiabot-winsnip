@@ -2,7 +2,7 @@
 
 # Konfigurasi
 URL="https://NodeIdmu.gaia.domains/v1/chat/completions"
-HEADERS=( -H "Authorization: Bearer "-H "accept: application/json" -H "Content-Type: application/json")
+HEADERS=(-H "accept: application/json" -H "Content-Type: application/json")
 KEYWORDS_FILE="keywords.txt"
 INTERVAL=30 # Interval dalam detik
 
